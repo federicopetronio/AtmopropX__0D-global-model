@@ -11,7 +11,7 @@ from global_model_package.specie import Species, Specie
 from global_model_package.constant_rate_calculation import get_K_func
 
 
-def get_species_and_reactions(chamber):
+def get_species_and_reactions(chamber, power=400):
                     
     species = Species([Specie("e", m_e, -e, 0, 3/2), Specie("Xe", 2.18e-25, 0, 1, 3/2), Specie("Xe+", 2.18e-25, e, 1, 3/2)])
 
@@ -68,7 +68,7 @@ def get_species_and_reactions(chamber):
     reaction_list = [out_Xe, src_Xe, ion_Xe, exc_Xe, ela_elec_Xe, in_Xe, th_Xe] #[exc_Xe, src_Xe] #[exc_Xe, src_Xe, out_Xe] 
     #reaction_list=[ela_elec_Xe]
 
-    electron_heating = ElectronHeatingConstantRFPower(species, 400, chamber) 
+    electron_heating = ElectronHeatingConstantRFPower(species, power, chamber) 
     #electron_heating = ElectronHeatingConstantRFPower(species, 1180, chamber)
     #electron_heating = ElectronHeatingConstantCurrent(species, 10, chamber)
 

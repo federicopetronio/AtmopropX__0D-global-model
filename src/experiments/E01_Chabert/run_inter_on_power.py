@@ -21,30 +21,49 @@ from reaction_set_Xe import get_species_and_reactions
 
 
 chamber = Chamber(config_dict)
-species, initial_state, reactions_list, electron_heating = get_species_and_reactions(chamber)
-log_folder_path = Path(__file__).resolve().parent.parent.parent.parent.joinpath("logs")
-model = GlobalModel(species, reactions_list, chamber, electron_heating, simulation_name="Chabert_reproduction", log_folder_path=log_folder_path)
 
-#print(chamber.V_chamber)
-# print(chamber.S_eff_total(chamber.n_g_0))
-# print(chamber.h_L(chamber.n_g_0))
-# print(chamber.h_R(chamber.n_g_0))
-# print(chamber.SIGMA_I*chamber.n_g_0)
-# print(f"SIGMA I est {chamber.SIGMA_I}")
-# print(f"ng0 est {chamber.n_g_0}")
+density_ne = []
+density_ng = []
+Thrust_ni = []
+Thrust_ng = []
+Temp_e = []
+Temp_ng = []
 
 
 # Solve the model
-try:
-    print("Solving model...")
-    sol = model.solve(0, 1, initial_state)  # TODO Needs some testing
-    print("Model resolved !")
-except Exception as exception:
-    print("Entering exception...")
-    model.var_tracker.save_tracked_variables()
-    print("Variables saved")
-    raise exception
-final_states = sol.y
+power_list = np.linspace(50, 1600, 30)
+
+
+for power in power_list:
+    species, initial_state, reactions_list, electron_heating = get_species_and_reactions(chamber, power=power)
+    log_folder_path = Path(__file__).resolve().parent.parent.parent.parent.joinpath("logs")
+    model = GlobalModel(species, reactions_list, chamber, electron_heating, simulation_name="Chabert_reproduction", log_folder_path=log_folder_path)
+
+    # Solve the model
+    try:
+        print("Solving model...")
+        sol = model.solve(0, 1, initial_state)  # TODO Needs some testing
+        print("Model resolved !")
+    except Exception as exception:
+        print("Entering exception...")
+        model.var_tracker.save_tracked_variables()
+        print("Variables saved")
+        raise exception
+    final_states = sol.y
+    density_ne.append(final_states[0][-1])
+    density_ng.append(final_states[1][-1])
+    Temp_e.append(final_states[species.nb][-1])
+    Temp_ng.append(final_states[species.nb + 1][-1])
+    h_L = chamber.h_L(final_states[1][-1])
+
+    Thrust_ni.append(h_L * density_ne[-1] * (e * Temp_e[-1])**.5 * (2 * e * chamber.V_grid)**.5 * chamber.R**2. * pi * chamber.beta_i)
+    print("H_L =", h_L)
+    print("density_ne =", density_ne[-1])
+    print("Temp_e =", (e * Temp_e[-1])**.5, k, e, Temp_e[-1])
+    print("(2 * e * chamber.V_grid)**.5 =", (2 * e * chamber.V_grid)**.5)
+    print( "chamber.R**2. * pi * chamber.beta_i =", chamber.R**2. * pi, chamber.beta_i)
+    # n_density
+    n_density = final_states[:species.nb]
 
 # Extract time points
 time_points = sol.t
@@ -87,9 +106,50 @@ ax2.grid()
 
 # Show the plot
 plt.tight_layout()
-plt.savefig(f"Chabert_reproduction_power_400W.png")
+plt.savefig(f"Chabert_reproduction_power_{power}W.png")
+
+plt.figure()
+plt.semilogy(power_list, density_ne, label='Electron Density')
+plt.semilogy(power_list, density_ng, label='Neutral Gas Density')
+plt.xlabel('RF Power (W)')
+plt.ylabel('Density (m^-3)')
+plt.title('Densities vs RF Power')
+plt.legend()
+plt.grid()
+plt.ylim(1e16, 1e20)
+plt.savefig(f"Chabert_reproduction_densities_vs_power.png")
+
+plt.figure()
+plt.semilogy(power_list, np.array(Thrust_ni)*1.e3, label='Ion Thrust Estimate')
+plt.xlabel('RF Power (W)')
+plt.ylabel('Thrust (N)')
+plt.title('Ion Thrust Estimate vs RF Power')
+plt.legend()
+plt.grid()
+plt.ylim(1e-1, 100)
+plt.savefig(f"Chabert_reproduction_thrust_vs_power.png")
+
+plt.figure()
+plt.subplot(211)
+plt.plot(power_list, Temp_e, label='Electron Temperature')
+plt.ylabel('Electron Temperature (eV)')    
+plt.grid()
+plt.xlim(0, 1600)
+plt.ylim(2, 6)
+plt.subplot(212)
+plt.plot(power_list, np.array(Temp_ng) * e / k, label='Neutral Gas Temperature')
+plt.scatter(power_list[-1], np.array(3.44e-2) * e / k, label='Neutral Gas Temperature')
+plt.xlabel('RF Power (W)')
+plt.ylabel('Neutral Gas Temperature (K)')
+plt.title('Temperatures vs RF Power')
+plt.xlim(0, 1600)
+plt.ylim(200, 600)
+plt.grid()
+plt.tight_layout()
+plt.savefig(f"Chabert_reproduction_temperatures_vs_power.png")
 
 
+print(final_states[0][-1], 2. , e ,chamber.V_grid ,chamber.R**2. ,pi, 0.7)
 # sol = model.solve(0, 5e-1)    # TODO Needs some testing
 
 # final_states = sol.y
