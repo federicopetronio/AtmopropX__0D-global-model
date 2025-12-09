@@ -156,6 +156,7 @@ class ElectronHeatingConstantRFPower(ElectronHeating):
         """
         super().__init__(species, chamber)
         self.power_RF = power_RF
+        self.power_transfer_efficiency = 0.0
 
     
     def R_ind(self, eps_p):
@@ -189,7 +190,10 @@ class ElectronHeatingConstantRFPower(ElectronHeating):
 
         # absorbed_power = R_ind * min(delivered_power / (R_ind + self.chamber.R_coil), 250)
         absorbed_power = R_ind * delivered_power / (R_ind + self.chamber.R_coil)
+        self.power_transfer_efficiency = R_ind / (R_ind + self.chamber.R_coil)
         self.var_tracker.add_value_to_variable("power_transfer_efficiency", R_ind / (R_ind + self.chamber.R_coil))
         self.var_tracker.add_value_to_variable("absorbed_power", absorbed_power)
-        self.var_tracker.add_value_to_variable("Icoil", np.sqrt(delivered_power  / (R_ind + self.chamber.R_coil)))
+        Icoil = np.sqrt(delivered_power  / (R_ind + self.chamber.R_coil))
+        self.var_tracker.add_value_to_variable("Icoil", Icoil)
+        # print("PRF = ", .5 * (R_ind + self.chamber.R_coil) * Icoil**2, self.power_RF, self.chamber.R_coil)
         return absorbed_power

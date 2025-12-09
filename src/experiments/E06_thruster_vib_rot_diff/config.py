@@ -10,8 +10,8 @@ config_dict = {
         's': 1e-3,
         
         # Grid transparency   # TODO : are these still valid for N, do we need multiple values ?
-        'beta_i': 0.7,
-        'beta_g': 0.3,
+        'beta_i': 0.4,
+        'beta_g': 0.15,
 
         # potential difference
         'V_grid': 1000, 

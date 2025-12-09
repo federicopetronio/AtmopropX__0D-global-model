@@ -22,7 +22,7 @@ from reaction_set_N import get_species_and_reactions
 log_folder_path = Path(__file__).resolve().parent.parent.parent.parent.joinpath("logs")
 outputs_folder_path = Path(__file__).resolve().parent.parent.parent.parent.joinpath("outputs")
 
-pressure_list_mTorr = [0.5, 0.7,1,2,4,8,16,30,50,80,100,110] # in mTor. Multiply by 0.13332237 to get in Pa
+pressure_list_mTorr = [0.1, 0.3, 0.5, 0.7,1,2,4,8,16,30,50,80,100,110] # in mTor. Multiply by 0.13332237 to get in Pa
 
 
 pressure_list_Pa = [p*0.13332237 for p in pressure_list_mTorr]

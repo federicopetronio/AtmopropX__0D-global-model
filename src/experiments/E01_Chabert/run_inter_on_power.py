@@ -18,13 +18,20 @@ from global_model_package.chamber_caracteristics import Chamber
 from config import config_dict
 from reaction_set_Xe import get_species_and_reactions
 
-
+from matplotlib import rcParams as rc
+# import gridspec
+rc["mathtext.fontset"] = "stix"
+rc["font.family"] = "STIXGeneral"
+# Enable LaTeX rendering
+plt.rcParams['text.usetex'] = True
+plt.rc("text", usetex=True)
 
 chamber = Chamber(config_dict)
 
 density_ne = []
 density_ng = []
 Thrust_ni = []
+Thrust_ni_1 = []
 Thrust_ng = []
 Temp_e = []
 Temp_ng = []
@@ -57,6 +64,8 @@ for power in power_list:
     h_L = chamber.h_L(final_states[1][-1])
 
     Thrust_ni.append(h_L * density_ne[-1] * (e * Temp_e[-1])**.5 * (2 * e * chamber.V_grid)**.5 * chamber.R**2. * pi * chamber.beta_i)
+    Thrust_ni_1.append(model.total_ion_thrust(final_states[:, -1]))
+    Thrust_ng.append(model.total_neutral_thrust(final_states[:, -1]))
     print("H_L =", h_L)
     print("density_ne =", density_ne[-1])
     print("Temp_e =", (e * Temp_e[-1])**.5, k, e, Temp_e[-1])
@@ -75,7 +84,7 @@ fig, (ax1, ax2) = plt.subplots(2, 1, sharex=True, figsize=(8, 6))
 #ax1.yscale('log')
 for i, specie in enumerate(species.species):
     ax1.semilogy(time_points, final_states[i], label=specie.name)
-ax1.set_ylabel('Density of species (m^-3)')
+ax1.set_ylabel('Density of species [m$^{-3}$]')
 ax1.legend(loc='best')
 ax1.grid()
 #ax1.grid(which='both', axis='y')
@@ -86,7 +95,7 @@ ax3 = ax2.twinx()
 # Plot temperatures: Electron on primary y-axis, Xenon on secondary y-axis
 ax2.plot(time_points, final_states[species.nb], label='Electron Temp (eV)', color='blue')
 for i in range(1,3):
-    ax3.plot(time_points, final_states[species.nb + i], linestyle='--', label= f"Molecules with {i} atoms Temp (eV)")
+    ax3.plot(time_points, final_states[species.nb + i], linestyle='--', label= f"Molecules with {i} atoms Temp [eV]")
 
 ax2.set_ylabel('Electron Temperature', color='blue')
 ax3.set_ylabel('Molecules Temperature', color='red')
@@ -99,7 +108,7 @@ lines_3, labels_3 = ax3.get_legend_handles_labels()
 ax2.legend(lines_2 + lines_3, labels_2 + labels_3, loc='best')
 
 # Set labels and title
-ax2.set_xlabel('Time (s)')
+ax2.set_xlabel('Time [s]')
 ax1.set_title('Species Concentrations Over Time')
 ax2.set_title('Temperature Evolution')
 ax2.grid()
@@ -111,8 +120,8 @@ plt.savefig(f"Chabert_reproduction_power_{power}W.png")
 plt.figure()
 plt.semilogy(power_list, density_ne, label='Electron Density')
 plt.semilogy(power_list, density_ng, label='Neutral Gas Density')
-plt.xlabel('RF Power (W)')
-plt.ylabel('Density (m^-3)')
+plt.xlabel('RF Power [W]')
+plt.ylabel('Density [m$^{-3}$]')
 plt.title('Densities vs RF Power')
 plt.legend()
 plt.grid()
@@ -121,8 +130,10 @@ plt.savefig(f"Chabert_reproduction_densities_vs_power.png")
 
 plt.figure()
 plt.semilogy(power_list, np.array(Thrust_ni)*1.e3, label='Ion Thrust Estimate')
-plt.xlabel('RF Power (W)')
-plt.ylabel('Thrust (N)')
+plt.semilogy(power_list, np.array(Thrust_ni_1)*1.e3, label='Ion Thrust CODE', ls=":")
+plt.semilogy(power_list, np.array(Thrust_ng)*1.e3, label='Neutral Thrust CODE', ls="--")
+plt.xlabel('RF Power [W]')
+plt.ylabel('Thrust [$10^{-3}$ N]')
 plt.title('Ion Thrust Estimate vs RF Power')
 plt.legend()
 plt.grid()
@@ -132,15 +143,15 @@ plt.savefig(f"Chabert_reproduction_thrust_vs_power.png")
 plt.figure()
 plt.subplot(211)
 plt.plot(power_list, Temp_e, label='Electron Temperature')
-plt.ylabel('Electron Temperature (eV)')    
+plt.ylabel('Electron Temperature [eV]')    
 plt.grid()
 plt.xlim(0, 1600)
 plt.ylim(2, 6)
 plt.subplot(212)
 plt.plot(power_list, np.array(Temp_ng) * e / k, label='Neutral Gas Temperature')
 plt.scatter(power_list[-1], np.array(3.44e-2) * e / k, label='Neutral Gas Temperature')
-plt.xlabel('RF Power (W)')
-plt.ylabel('Neutral Gas Temperature (K)')
+plt.xlabel('RF Power [W]')
+plt.ylabel('Neutral Gas Temperature [K]')
 plt.title('Temperatures vs RF Power')
 plt.xlim(0, 1600)
 plt.ylim(200, 600)

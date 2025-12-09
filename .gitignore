@@ -175,3 +175,10 @@ cython_debug/
 
 # PyPI configuration file
 .pypirc
+.atmopropX
+
+src/Experiments/E06_thruster_vib_rot_diff/*.txt
+src/experiments/E06_thruster_vib_rot_diff/final_states*
+outputs/logs_for_plot_by_power/*.json
+*png
+src/experiments/E06_thruster_vib_rot_diff/time_points*
