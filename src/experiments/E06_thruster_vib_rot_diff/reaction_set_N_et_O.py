@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 import pandas as pd
 from scipy.constants import pi, e, k as k_B, epsilon_0 as eps_0, c, m_e
@@ -20,7 +21,9 @@ def get_species_and_reactions(chamber, altitude):
     species = Species([Specie("e", m_e, -e, 0, 3/2), Specie("N2", 4.65e-26, 0, 2, 5/2), Specie("N", 2.33e-26, 0, 1, 3/2), Specie("N2+", 4.65e-26, e, 2, 5/2), Specie("N+", 2.33e-26, e, 1, 3/2), Specie("O2+", 5.31e-26, e, 2, 5/2), Specie("O2", 5.31e-26, 0, 2, 5/2), Specie("O", 2.67e-26, 0, 1, 3/2), Specie("O+", 2.67e-26, e, 1, 3/2)])
 
     # altitude = 250
-    comp_data = pd.read_csv("comp_atm_ready.txt", sep ="\t")
+    # comp_data = pd.read_csv("comp_atm_ready.txt", sep ="\t")
+    comp_data = pd.read_csv("comp_atm_nrlmsise00_ready.txt", sep ="\t")
+    
     print(comp_data.columns)
     comp_data = comp_data[comp_data["Heit(km)"] == altitude]
 

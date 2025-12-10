@@ -26,7 +26,7 @@ def get_species_and_reactions(chamber, power=400):
     ### Excitation : OK 
 
     # exc_Xe = Excitation(species, "N", get_K_func(species, "Xe", "exc_Xe"), 11.6, chamber) 
-    exc_Xe = Excitation(species, "Xe", get_K_func(species, "Xe", "Ionization_Xe"), 11.6, chamber) 
+    exc_Xe = Excitation(species, "Xe", get_K_func(species, "Xe", "exc_Xe"), 11.6, chamber) 
 
     #get_K_func(species, "Xe", "exc_Xe")
     #lambda T: Kexc(T)
