@@ -59,7 +59,7 @@ eta_efficiency = []
 
 power = 3000
 # Solve the model
-altitudes = np.arange(100, 281, 20)  # in km
+altitudes = np.arange(100, 301, 20)  # in km
 for altitude in altitudes:
     chamber = Chamber(config_dict)
     species, initial_state, reactions_list, electron_heating = get_species_and_reactions(chamber, altitude)

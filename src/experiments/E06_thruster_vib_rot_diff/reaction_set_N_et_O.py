@@ -1,3 +1,4 @@
+from curses.ascii import alt
 import sys
 import numpy as np
 import pandas as pd
@@ -14,7 +15,53 @@ from global_model_package.reactions import (Excitation, Ionisation, Dissociation
 from global_model_package.specie import Species, Specie
 from global_model_package.constant_rate_calculation import get_K_func, ReactionRateConstant
 
+from datetime import datetime
+from nrlmsise00 import msise_flat
+from nrlmsise00 import msise_model
+
+
 ReactionRateConstant.CROSS_SECTIONS_PATH = "../../../cross_sections"
+
+def calc_inection_rate_air(altitude, AREA = 1.0):
+    '''Calculate injection rates for O2, N2, O, N at a given altitude (in kilometers) and area (in m^2) using the MSISE-00 model.'''
+    print("Calculating injection rates at altitude:", altitude, "km")
+
+    # dens = msise_flat(datetime(2025, 1, 1, 0, 0, 0), np.array([[altitude]]), 0, -70, 150, 150, 4)  # convert from cm^-3 to m^-3
+    # O2_den = dens[0,0,3] * 1e6  # convert from cm^-3 to m^-3
+    # N2_den = dens[0,0,2] * 1e6  # convert from cm^-3 to m^-3
+    # O_den = dens[0,0,1] * 1e6  # convert from cm^-3 to m^-3
+    # N_den = dens[0,0,7] * 1e6  # convert from cm^-3 to m^-3
+    # T_eff = 0.07
+    
+    dens, temp = msise_model(datetime(2025, 1, 1, 0, 0, 0), np.array([[altitude]]), 0, -70, 150, 150, 4)
+    O2_den = dens[3] * 1e6  # convert from cm^-3 to m^-3
+    N2_den = dens[2] * 1e6  # convert from cm^-3 to m^-3
+    O_den = dens[1] * 1e6  # convert from cm^-3 to m^-3
+    N_den = dens[7] * 1e6  # convert from cm^-3 to m^-3
+    T_eff = temp[1] / 11604.52500617  # convert from K to eV
+
+    mu = 3.986e14  # m^3/s^2
+    R_earth = 6371e3  # m
+    orbital_speeds = np.sqrt(mu / (R_earth + altitude*1e3))
+
+    O2_injection_rate = orbital_speeds * np.array(O2_den) * AREA  # particles/s
+    N2_injection_rate = orbital_speeds * np.array(N2_den) * AREA  # particles/s
+    O_injection_rate = orbital_speeds * np.array(O_den) * AREA  # particles/s
+    N_injection_rate = orbital_speeds * np.array(N_den) * AREA  # particles/s
+    dframe = pd.DataFrame({
+        "Heit(km)": [altitude],
+        "Oden(m-3)": [O_den],
+        "O2den(m-3)": [O2_den],
+        "Nden(m-3)": [N_den],
+        "N2den(m-3)": [N2_den],
+        "T(eV)": [T_eff],
+        "Q_O2(s-1)": [O2_injection_rate],
+        "Q_N2(s-1)": [N2_injection_rate],
+        "Q_O(s-1)": [O_injection_rate],
+        "Q_N(s-1)": [N_injection_rate],
+    })
+    return dframe
+
 
 def get_species_and_reactions(chamber, altitude):
     
@@ -26,7 +73,9 @@ def get_species_and_reactions(chamber, altitude):
     
     print(comp_data.columns)
     comp_data = comp_data[comp_data["Heit(km)"] == altitude]
-
+    # print(comp_data)
+    # print(calc_inection_rate_air(altitude))
+    comp_data = calc_inection_rate_air(altitude)
     initial_state_dict = {
         "e": 2.1e12,
         "N2": comp_data["N2den(m-3)"].values[0],#8e14,

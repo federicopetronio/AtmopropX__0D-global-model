@@ -38,11 +38,6 @@ altitude = 250
 chamber = Chamber(config_dict)
 species, initial_state, reactions_list, electron_heating = get_species_and_reactions(chamber, altitude)
 log_folder_path = Path(__file__).resolve().parent.parent.parent.parent.joinpath("logs")
-# model = GlobalModel(species, reactions_list, chamber, electron_heating, simulation_name="N_O_simple_thruster_constant_kappa", log_folder_path=log_folder_path)
-comp_data = pd.read_csv("comp_atm_ready.txt", sep ="\t")
-# comp_data = pd.read_csv("comp_atm_nrlmsise00_ready.txt", sep ="\t")
-print(comp_data.columns)
-comp_data = comp_data[comp_data["Heit(km)"] == altitude]
 
 # Solve the model
 power = 1500
@@ -69,6 +64,7 @@ columns = species.names + ['Te', 'Tmono', 'Tdiato']
 df_temporal = pd.DataFrame(final_states.T, columns=columns)
 df_temporal['Time (s)'] = time_points
 df_temporal.to_csv(f"data/temporal_evolution_NO_{power}W_alt_{altitude}km.csv", index=False)
+print("saved to: ", f"data/temporal_evolution_NO_{power}W_alt_{altitude}km.csv")
 
 
 # # print(",".join(map(str, sol.y[:, -1])))
