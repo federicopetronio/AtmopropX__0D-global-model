@@ -39,6 +39,7 @@ def calc_inection_rate_air(altitude, AREA = 1.0):
     O_den = dens[1] * 1e6  # convert from cm^-3 to m^-3
     N_den = dens[7] * 1e6  # convert from cm^-3 to m^-3
     T_eff = temp[1] / 11604.52500617  # convert from K to eV
+    T_eff = 0.03
 
     mu = 3.986e14  # m^3/s^2
     R_earth = 6371e3  # m
