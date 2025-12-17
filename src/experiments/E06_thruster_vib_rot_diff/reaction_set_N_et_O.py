@@ -70,10 +70,10 @@ def get_species_and_reactions(chamber, altitude):
 
     # altitude = 250
     # comp_data = pd.read_csv("comp_atm_ready.txt", sep ="\t")
-    comp_data = pd.read_csv("comp_atm_nrlmsise00_ready.txt", sep ="\t")
+    # comp_data = pd.read_csv("comp_atm_nrlmsise00_ready.txt", sep ="\t")
     
-    print(comp_data.columns)
-    comp_data = comp_data[comp_data["Heit(km)"] == altitude]
+    # print(comp_data.columns)
+    # comp_data = comp_data[comp_data["Heit(km)"] == altitude]
     # print(comp_data)
     # print(calc_inection_rate_air(altitude))
     comp_data = calc_inection_rate_air(altitude)
@@ -94,7 +94,7 @@ def get_species_and_reactions(chamber, altitude):
     print(initial_state_dict)
 
     compression_rate = 4_000
-    collection_rate = 0.5
+    collection_rate = 0.35
     initial_state =  [compression_rate * initial_state_dict[specie.name] for specie in species.species] + [initial_state_dict["T_e"], initial_state_dict["T_mono"], initial_state_dict["T_diato"]]
     
     injection_rates = collection_rate * np.array([2e12, comp_data["Q_N2(s-1)"].values[0], comp_data["Q_N(s-1)"].values[0], 1e12, 1e12, 0.0, comp_data["Q_O2(s-1)"].values[0], comp_data["Q_O(s-1)"].values[0], 0.0])

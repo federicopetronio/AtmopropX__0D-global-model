@@ -191,7 +191,7 @@ df_results = pd.DataFrame({
     "xi_efficiency": xi_efficiency
 })
 
-df_results.to_csv(f"data/results_NO_thruster_alt_{altitude}.csv", index=False)
+df_results.to_csv(f"data/results_NO_thruster_alt_{altitude}_etaC=0v35.csv", index=False)
 
 powers = sorted(final_states_per_power.keys())
 densities = np.array([final_states_per_power[p] for p in powers])   # shape: (num_powers, num_species)
