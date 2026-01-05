@@ -150,14 +150,18 @@ for power in power_list:
     eta_tot = (h_L * nN2plus * u_BN2 * AREA + h_L * nNplus * u_BN * AREA + h_L * nO2plus * u_BO2 * AREA + h_L * nOplus * u_BO * AREA) / (injection_rates[1] + injection_rates[2] + injection_rates[6] + injection_rates[7])
 
 
-    gamma_i_N2plus = h_L * nN2plus * u_BN2 * AREA * e * chamber.V_grid / power
-    gamma_i_Nplus = h_L * nNplus * u_BN * AREA * e * chamber.V_grid / power
-    gamma_i_O2plus = h_L * nO2plus * u_BO2 * AREA * e * chamber.V_grid / power
-    gamma_i_Oplus = h_L * nOplus * u_BO * AREA * e * chamber.V_grid / power
+    P_i_N2plus = h_L * nN2plus * u_BN2 * AREA * e * chamber.V_grid 
+    P_i_Nplus = h_L * nNplus * u_BN * AREA * e * chamber.V_grid 
+    P_i_O2plus = h_L * nO2plus * u_BO2 * AREA * e * chamber.V_grid 
+    P_i_Oplus = h_L * nOplus * u_BO * AREA * e * chamber.V_grid 
 
-    gamma_tot = gamma_i_N2plus + gamma_i_Nplus + gamma_i_O2plus + gamma_i_Oplus
+    total_power_ions = P_i_N2plus + P_i_Nplus + P_i_O2plus + P_i_Oplus
 
-    Gamma_efficiency.append(gamma_tot)
+    
+
+    # gamma_tot = gamma_i_N2plus + gamma_i_Nplus + gamma_i_O2plus + gamma_i_Oplus
+
+    # Gamma_efficiency.append(gamma_tot)
 
     print("eta N2plus :", eta_N2, h_L * nN2plus * u_BN2 * AREA, injection_rates[1])
     print("eta Nplus :", eta_N, h_L * nNplus * u_BN * AREA, injection_rates[2])
@@ -186,12 +190,12 @@ df_results = pd.DataFrame({
     "Thrust_ion (N)": Thrust_ni_1,
     "Thrust_neutral (N)": Thrust_ng,
     "Power_transfer_efficiency": Power_transfer_efficiency,
-    "Gamma_efficiency": Gamma_efficiency,
+    # "Gamma_efficiency": Gamma_efficiency,
     "eta_efficiency": eta_efficiency,
     "xi_efficiency": xi_efficiency
 })
 
-df_results.to_csv(f"data/results_NO_thruster_alt_{altitude}_etaC=0v35.csv", index=False)
+df_results.to_csv(f"data/results_NO_thruster_alt_{altitude}_etaC=0v35_1.csv", index=False)
 
 powers = sorted(final_states_per_power.keys())
 densities = np.array([final_states_per_power[p] for p in powers])   # shape: (num_powers, num_species)
@@ -271,7 +275,7 @@ plt.tight_layout()
 plt.savefig(f"images/Thrust_vs_power.png")
 
 plt.figure()
-plt.plot(power_list, Gamma_efficiency, label='Power Efficiency')
+# plt.plot(power_list, Gamma_efficiency, label='Power Efficiency')
 plt.plot(power_list, eta_efficiency, label='Mass efficiency', ls="--")
 plt.plot(power_list, Power_transfer_efficiency, label='Power transfer efficiency', ls=":")
 plt.ylim(0, 1)

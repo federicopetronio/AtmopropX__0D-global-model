@@ -33,7 +33,7 @@ def calc_inection_rate_air(altitude, AREA = 1.0):
     # N_den = dens[0,0,7] * 1e6  # convert from cm^-3 to m^-3
     # T_eff = 0.07
     
-    dens, temp = msise_model(datetime(2025, 1, 1, 0, 0, 0), np.array([[altitude]]), 0, -70, 150, 150, 4)
+    dens, temp = msise_model(datetime(2025, 1, 1, 0, 0, 0), np.array([[altitude]]), 0, 0, 150, 150, 4)
     O2_den = dens[3] * 1e6  # convert from cm^-3 to m^-3
     N2_den = dens[2] * 1e6  # convert from cm^-3 to m^-3
     O_den = dens[1] * 1e6  # convert from cm^-3 to m^-3
@@ -66,7 +66,7 @@ def calc_inection_rate_air(altitude, AREA = 1.0):
 
 def get_species_and_reactions(chamber, altitude):
     
-    species = Species([Specie("e", m_e, -e, 0, 3/2), Specie("N2", 4.65e-26, 0, 2, 5/2), Specie("N", 2.33e-26, 0, 1, 3/2), Specie("N2+", 4.65e-26, e, 2, 5/2), Specie("N+", 2.33e-26, e, 1, 3/2), Specie("O2+", 5.31e-26, e, 2, 5/2), Specie("O2", 5.31e-26, 0, 2, 5/2), Specie("O", 2.67e-26, 0, 1, 3/2), Specie("O+", 2.67e-26, e, 1, 3/2)])
+    species = Species([Specie("e", m_e, -e, 0, 3/2), Specie("N2", 4.65e-26, 0, 2, 7/2), Specie("N", 2.33e-26, 0, 1, 3/2), Specie("N2+", 4.65e-26, e, 2, 7/2), Specie("N+", 2.33e-26, e, 1, 3/2), Specie("O2+", 5.31e-26, e, 2, 7/2), Specie("O2", 5.31e-26, 0, 2, 7/2), Specie("O", 2.67e-26, 0, 1, 3/2), Specie("O+", 2.67e-26, e, 1, 3/2)])
 
     # altitude = 250
     # comp_data = pd.read_csv("comp_atm_ready.txt", sep ="\t")
