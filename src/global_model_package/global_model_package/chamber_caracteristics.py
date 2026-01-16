@@ -37,6 +37,9 @@ class Chamber(object):
         elif "target_pressure" in config_dict:
             self.target_pressure = config_dict["target_pressure"]
             print("Chamber init : 'target_pressure' has been set, gas ejected such that constant pressure is maintained")
+        elif "target_power" in config_dict:
+            self.target_power = config_dict["target_power"]
+            print("Chamber init : 'target_power' has been set, gas ejected such that constant power is maintained")
         else:
             raise KeyError("No gas ejection method has been made possible in the config file. Please configure ('V_grid', 'beta_g', 'beta_i') or 'target_pressure'.")
 

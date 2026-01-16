@@ -57,7 +57,7 @@ class InelasticCollision(Reaction):
             rate[sp.nb_atoms] += self.chamber.gamma_neutral(state[sp.index], state[self.species.nb + sp.nb_atoms], sp.mass) * E_ion * self.chamber.SIGMA_I
 
         self.var_tracker.add_value_to_variable_list('energy_change_inelastic_collision', rate)
-
+        # print("Warning: InelasticCollision.energy_change_rate is not correct regarding energy conservation!", state, rate)
         return rate
 
 
