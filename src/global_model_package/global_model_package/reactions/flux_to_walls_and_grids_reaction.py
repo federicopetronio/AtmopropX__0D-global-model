@@ -79,10 +79,11 @@ class FluxToWallsAndThroughGrids(Reaction):
 
 
         # * energy loss for ions neglected for now because missing energy of ion
-        gamma_e = 0
+        # gamma_e = 0
+        sum_gamma_ions = 0
         for sp in self.species.species[1:] :   # electron are skipped because handled before
             if sp.charge != 0:
-                gamma_e += self.chamber.gamma_ion(state[sp.index], state[self.species.nb] , sp.mass)
+                sum_gamma_ions += self.chamber.gamma_ion(state[sp.index], state[self.species.nb] , sp.mass)
                 #rate[sp.nb_atoms] -= self.chamber.gamma_ion(state[sp.index], state[self.species.nb] , sp.mass) * self.chamber.S_eff_total_ion_neutrelisation(n_g) / self.chamber.V_chamber
             else:
                 E_neutral=sp.thermal_capacity * e * state[self.species.nb + sp.nb_atoms]
@@ -91,8 +92,8 @@ class FluxToWallsAndThroughGrids(Reaction):
 
         #rate[0] -= E_kin * gamma_e * self.chamber.S_eff_total(self.n_g_tot(state)) / self.chamber.V_chamber
         #         
-        rate[0] -= E_kin_1 * gamma_e * self.chamber.S_eff_total(self.n_g_tot(state)) / self.chamber.V_chamber
-        rate[0] -= E_kin_2 * gamma_e * self.chamber.S_gridded_wall * self.chamber.h_L(self.n_g_tot(state)) / self.chamber.V_chamber
+        rate[0] -= E_kin_1 * sum_gamma_ions * self.chamber.S_eff_wall(self.n_g_tot(state)) / self.chamber.V_chamber
+        rate[0] -= E_kin_2 * sum_gamma_ions * self.chamber.S_gridded_wall * self.chamber.h_L(self.n_g_tot(state)) / self.chamber.V_chamber
 
         self.var_tracker.add_value_to_variable_list("energy_change_flux_to_walls_and_through_grids", rate)
         return rate

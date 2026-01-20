@@ -72,7 +72,11 @@ class Chamber(object):
         """Total effective surface on which ions and electrons are lost are lost. Equals hS.
          For ions takes into account ions lost through the grids and ions neutralized at the walls """
         return (2 * self.h_R(n_g_tot) * pi * self.R * self.L) + (2 * self.h_L(n_g_tot) * pi * self.R**2)
-
+    
+    def S_eff_wall(self, n_g_tot):
+        """Total effective surface on which ions and electrons are lost are lost. Only wall no grid. """
+        return (2 * self.h_R(n_g_tot) * pi * self.R * self.L) + (self.h_L(n_g_tot) * pi * self.R**2)
+    
     def S_eff_total_ion_neutrelisation(self, n_g_tot):
         """Effective area on which ions are neutralized. Equals S_eff_total - beta_i * S_gridded_walls."""
         return 2 * self.h_R(n_g_tot) * pi * self.R * self.L + (2 - self.beta_i) * self.h_L(n_g_tot) * pi * self.R**2     
