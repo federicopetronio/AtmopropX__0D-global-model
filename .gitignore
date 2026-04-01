@@ -182,3 +182,12 @@ src/experiments/E06_thruster_vib_rot_diff/final_states*
 outputs/logs_for_plot_by_power/*.json
 *png
 src/experiments/E06_thruster_vib_rot_diff/time_points*
+*.pdf
+outputs/*.csv
+outputs/logs_for_plot_by_power/*.json
+src/experiments/E06_thruster_vib_rot_diff/*.txt
+src/experiments/E06_thruster_vib_rot_diff/data/*.csv
+*.json
+outputs/logs_for_plot_by_power/NO1000_alt_250.json
+src/experiments/E08_N2_Thorsteinsonn/Gud_comparison_ne.png
+src/experiments/E08_N2_Thorsteinsonn/Gud_comparison_Te.png

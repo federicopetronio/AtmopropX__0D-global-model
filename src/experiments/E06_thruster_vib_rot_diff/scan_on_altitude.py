@@ -43,8 +43,8 @@ from global_model_package.reactions import ElectronHeatingConstantRFPower
 from config import config_dict
 from reaction_set_N_et_O import get_species_and_reactions
 
-# for power in [1500, 2000, 2500, 3000]:
-for power in [2500, 3000]:
+for power in [1500, 2000, 2500, 3000]:
+# for power in [2500, 3000]:
     final_states_per_power = {}
     final_states_list = []
 
@@ -70,7 +70,7 @@ for power in [2500, 3000]:
     eta_efficiency = []
 
     # Solve the model
-    altitudes = np.arange(100, 281, 20)  # in km
+    altitudes = np.arange(100, 301, 20)  # in km
     for altitude in altitudes:
         t0 = time.time()
         with HiddenPrints():

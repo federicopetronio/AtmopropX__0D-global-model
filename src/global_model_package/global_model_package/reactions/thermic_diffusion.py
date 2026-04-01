@@ -49,7 +49,8 @@ class ThermicDiffusion(Reaction):
     @override
     def energy_change_rate(self, state):
         rate = np.zeros(3)
-        lambda_0 = self.chamber.R/2.405 + self.chamber.L/np.pi
+        # lambda_0 = self.chamber.R/2.405 + self.chamber.L/np.pi
+        lambda_0 = ((2.405/self.chamber.R)**2 + (np.pi/self.chamber.L)**2)**(-1/2)   # characteristic length for thermic diffusion
 
         for sp in self.species.species[1:] : 
             if sp.charge == 0:

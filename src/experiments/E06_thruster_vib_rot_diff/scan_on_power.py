@@ -34,7 +34,7 @@ from config import config_dict
 from reaction_set_N_et_O import get_species_and_reactions
 
 
-altitude = 250
+altitude = 220
 chamber = Chamber(config_dict)
 species, initial_state, reactions_list, electron_heating = get_species_and_reactions(chamber, altitude)
 log_folder_path = Path(__file__).resolve().parent.parent.parent.parent.joinpath("logs")

@@ -44,8 +44,10 @@ class FluxToWallsAndThroughGrids(Reaction):
         for sp in self.species.species[1:]:
             if sp.charge != 0:
                 s += state[sp.index] * np.sqrt(m_e/sp.mass)
-        a = np.sqrt(2 * np.pi) * (1 - beta) * s
-        return state[self.species.nb] * np.log(state[0]/a)
+        a = np.sqrt(2 * np.pi) * s
+        # print("resultat phi sheath : ", state[self.species.nb] * np.log(state[0] * (1 - beta)/a),  state[self.species.nb] * np.log(state[0] / ((1 - beta)*a)))
+        return state[self.species.nb] * np.log(state[0] / ((1 - beta)*a))
+        # return state[self.species.nb] * np.log(state[0] * (1 - beta)/a)
 
 
     @override

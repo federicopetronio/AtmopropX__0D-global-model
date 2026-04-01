@@ -77,4 +77,4 @@ df1 = pd.DataFrame({
     "Electron_density_m3": density_vec,
     "Electron_temperature_eV": temperature_vec
 })
-df1.to_csv(outputs_folder_path.joinpath("new_O2_singh_e_density_Te_across_power_with_thermal_diff.csv"))
+df1.to_csv(outputs_folder_path.joinpath("new_O2_singh_e_density_Te_across_power_with_thermal_diff_1.csv"))
