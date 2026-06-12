@@ -76,8 +76,8 @@ class FluxToWallsAndThroughGrids(Reaction):
         rate = np.zeros(3)
 
         #E_kin = 7*e*state[self.species.nb]
-        E_kin_1 = (5/2 * e * state[self.species.nb] + e*self.phi_sheath(state, 0))
-        E_kin_2 = (5/2 * e * state[self.species.nb] + e*self.phi_sheath(state, self.chamber.beta_i))
+        E_kin_1 = (2. * e * state[self.species.nb] + e*self.phi_sheath(state, 0))
+        E_kin_2 = (2. * e * state[self.species.nb] + e*self.phi_sheath(state, self.chamber.beta_i))
 
 
         # * energy loss for ions neglected for now because missing energy of ion

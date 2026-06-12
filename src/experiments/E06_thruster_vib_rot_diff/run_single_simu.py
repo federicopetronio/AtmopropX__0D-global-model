@@ -63,8 +63,8 @@ columns = species.names + ['Te', 'Tmono', 'Tdiato']
 
 df_temporal = pd.DataFrame(final_states.T, columns=columns)
 df_temporal['Time (s)'] = time_points
-df_temporal.to_csv(f"data/temporal_evolution_NO_{power}W_alt_{altitude}km_1.csv", index=False)
-print("saved to: ", f"data/temporal_evolution_NO_{power}W_alt_{altitude}km_1.csv")
+df_temporal.to_csv(f"data/temporal_evolution_NO_{power}W_alt_{altitude}km_second_rev.csv", index=False)
+print("saved to: ", f"data/temporal_evolution_NO_{power}W_alt_{altitude}km_second_rev.csv")
 
 
 # # print(",".join(map(str, sol.y[:, -1])))

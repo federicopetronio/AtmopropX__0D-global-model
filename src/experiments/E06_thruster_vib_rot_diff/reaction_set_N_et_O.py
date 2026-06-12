@@ -15,14 +15,52 @@ from global_model_package.reactions import (Excitation, Ionisation, Dissociation
 from global_model_package.specie import Species, Specie
 from global_model_package.constant_rate_calculation import get_K_func, ReactionRateConstant
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from nrlmsise00 import msise_flat
 from nrlmsise00 import msise_model
 
 
 ReactionRateConstant.CROSS_SECTIONS_PATH = "../../../cross_sections"
 
-def calc_inection_rate_air(altitude, AREA = 1.0):
+def average_msis_elliptical(msise_model, a, e, period_sec, n_samples=200):
+    t0 = datetime(2025, 1, 1, 0, 0, 0)
+
+    O2_list, N2_list, O_list, N_list, He_list, Ar_list, T_list = [], [], [], [], [], [], []
+
+    for i in range(n_samples):
+        t = t0 + timedelta(seconds=i * period_sec / n_samples)
+
+        if e == 0:
+            alt = a - 6371
+        else:
+            raise Exception("Non-zero eccentricity not implemented yet.")
+
+        dens, temp = msise_model(
+            t,
+            np.array([alt]),   # also fix shape here
+            0, 0, 150, 150, 4
+        )
+        print("alt:", alt)
+        O2_list.append(dens[3] * 1e6)
+        N2_list.append(dens[2] * 1e6)
+        O_list.append(dens[1] * 1e6)
+        N_list.append(dens[7] * 1e6)
+        He_list.append(dens[0] * 1e6)
+        Ar_list.append(dens[4] * 1e6)
+        T_list.append(temp[1] / 11604.52500617)
+        print("np.mean(O2_list)", np.mean(O2_list))
+
+    return {
+        "O2": O2_list,
+        "N2": N2_list,
+        "O": O_list,
+        "N": N_list,
+        "He": He_list,
+        "Ar": Ar_list,
+        "T_eff": T_list
+    }
+
+def calc_inection_rate_air(altitude, AREA = 1.0, mean_atm = False):
     '''Calculate injection rates for O2, N2, O, N at a given altitude (in kilometers) and area (in m^2) using the MSISE-00 model.'''
     print("Calculating injection rates at altitude:", altitude, "km")
 
@@ -32,13 +70,41 @@ def calc_inection_rate_air(altitude, AREA = 1.0):
     # O_den = dens[0,0,1] * 1e6  # convert from cm^-3 to m^-3
     # N_den = dens[0,0,7] * 1e6  # convert from cm^-3 to m^-3
     # T_eff = 0.07
+
+    if mean_atm:
+        Re = 6371e3
+        a = Re + altitude*1e3
+        mu = 3.986004418e14  # Earth gravitational parameter
+
+        period_sec = 2 * np.pi * np.sqrt(a**3 / mu) * 500
+
+        result = average_msis_elliptical(
+            msise_model,
+            a=a/1e3,  # convert to km
+            e=0.0,
+            period_sec=period_sec,
+            n_samples=2000
+        )
+
+        O2_den = np.mean(result["O2"])
+        N2_den = np.mean(result["N2"])
+        O_den = np.mean(result["O"])
+        N_den = np.mean(result["N"])
+        He_den = np.mean(result["He"])
+        Ar_den = np.mean(result["Ar"])
+        T_eff = np.mean(result["T_eff"])
+
     
-    dens, temp = msise_model(datetime(2025, 1, 1, 0, 0, 0), np.array([[altitude]]), 0, 0, 150, 150, 4)
-    O2_den = dens[3] * 1e6  # convert from cm^-3 to m^-3
-    N2_den = dens[2] * 1e6  # convert from cm^-3 to m^-3
-    O_den = dens[1] * 1e6  # convert from cm^-3 to m^-3
-    N_den = dens[7] * 1e6  # convert from cm^-3 to m^-3
-    T_eff = temp[1] / 11604.52500617  # convert from K to eV
+    else:
+        dens, temp = msise_model(datetime(2025, 1, 1, 0, 0, 0), np.array([[altitude]]), 0, 0, 150, 150, 4)
+        
+        O2_den = dens[3] * 1e6  # convert from cm^-3 to m^-3
+        N2_den = dens[2] * 1e6  # convert from cm^-3 to m^-3
+        O_den = dens[1] * 1e6  # convert from cm^-3 to m^-3
+        N_den = dens[7] * 1e6  # convert from cm^-3 to m^-3
+        He_den = dens[0] * 1e6  # convert from cm^-3 to m^-3
+        Ar_den = dens[4] * 1e6  # convert from cm^-3 to m^-3
+        T_eff = temp[1] / 11604.52500617  # convert from K to eV
     T_eff = 0.03
 
     mu = 3.986e14  # m^3/s^2
@@ -60,6 +126,8 @@ def calc_inection_rate_air(altitude, AREA = 1.0):
         "Q_N2(s-1)": [N2_injection_rate],
         "Q_O(s-1)": [O_injection_rate],
         "Q_N(s-1)": [N_injection_rate],
+        "Heden(m-3)": [He_den],
+        "Arden(m-3)": [Ar_den],
     })
     return dframe
 
@@ -76,7 +144,7 @@ def get_species_and_reactions(chamber, altitude):
     # comp_data = comp_data[comp_data["Heit(km)"] == altitude]
     # print(comp_data)
     # print(calc_inection_rate_air(altitude))
-    comp_data = calc_inection_rate_air(altitude)
+    comp_data = calc_inection_rate_air(altitude, mean_atm=True)
     initial_state_dict = {
         "e": 2.1e12,
         "N2": comp_data["N2den(m-3)"].values[0],#8e14,
